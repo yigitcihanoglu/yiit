@@ -99,7 +99,7 @@ canvas{display:block; width:100%; height:auto; aspect-ratio:4/3; touch-action:no
     <span id="status"></span>
   </div>
 
-  <p class="help"><span class="keys">Ok tuşları veya WASD ile hareket. Boşluk ile Atmık at, basılı tutup bırakırsan 8 yöne Süper Atmık atar. X ile Sıçmık bırak. Enter ile başla, P ile duraklat. </span>Vurulan baloncuk ikiye bölünür, en küçükleri patlayınca jeton, Atmık veya güç düşürür. Sahaya düzenli olarak Atmık kutusu gelir, Atmık’ın azalınca daha sık gelir. Güçler: turuncu Büyük Atmık (kalın ve delip geçer), yeşil Dağınık Atmık (üçlü atış), mor Sınırsız Atmık (10 saniye). Kırmızı baloncuklar iki vuruşta bölünür. Baloncuğa çarparsan bir can gider. Süre biterse bir can gider ve süre yeniden başlar.</p>
+  <p class="help"><span class="keys">Ok tuşları veya WASD ile hareket. Boşluk, J, Z ya da oyun alanına tıklayarak Atmık at; basılı tutup bırakırsan 8 yöne Süper Atmık atar. Klavyen çapraz giderken Boşluk’u algılamıyorsa WASD ile J’yi ya da fareyi kullan. X ile Sıçmık bırak. Enter ile başla, P ile duraklat. </span>Vurulan baloncuk ikiye bölünür, en küçükleri patlayınca jeton, Atmık veya güç düşürür. Sahaya düzenli olarak Atmık kutusu gelir, Atmık’ın azalınca daha sık gelir. Güçler: turuncu Büyük Atmık (kalın ve delip geçer), yeşil Dağınık Atmık (üçlü atış), mor Sınırsız Atmık (10 saniye). Kırmızı baloncuklar iki vuruşta bölünür. Baloncuğa çarparsan bir can gider. Süre biterse bir can gider ve süre yeniden başlar.</p>
 </main>
 
 <script>
@@ -472,7 +472,12 @@ function togglePause(){
   else if (state === 'paused'){ state = 'playing'; }
   pauseBtn.textContent = state === 'paused' ? 'Devam et' : 'Duraklat';
 }
-cv.addEventListener('pointerdown', () => primaryAction());
+cv.addEventListener('pointerdown', e => {
+  if (state === 'playing'){ e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (_) {} pressFire(); }
+  else primaryAction();
+});
+['pointerup', 'pointercancel'].forEach(ev => cv.addEventListener(ev, () => releaseFire()));
+cv.addEventListener('contextmenu', e => e.preventDefault());
 
 const pad = document.getElementById('pad'), knob = document.getElementById('knob');
 let padActive = false;
